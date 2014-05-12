@@ -1,0 +1,49 @@
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+
+	dependencies {
+		classpath 'com.android.tools.build:gradle:0.9.1'
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+apply plugin: 'android-library'
+
+dependencies {
+	compile "com.android.support:support-v4:19.0.+"
+}
+
+android {
+
+	// Find the compile target from the pom.xml file, so it only needs to be 
+	// updated in one location.
+	def pom = new XmlParser().parse(file('../pom.xml'))
+	def androidPlatformVersion = pom.properties['android.platform'].text() as Integer
+
+	compileSdkVersion androidPlatformVersion
+	
+	buildToolsVersion "19.0.3"
+
+	// http://tools.android.com/tech-docs/new-build-system/user-guide#TOC-Configuring-the-Structure
+	// The android gradle plugin expects the android project to be in a folder
+	// called "src/main/" (e.g., that is where the AndroidManifest.xml/src/res/etc
+	// directories should live). Seeing as that is not the case in this project,
+	// we need to override these defaults.
+	sourceSets {
+		main {
+			manifest.srcFile 'AndroidManifest.xml'
+			java.srcDirs = ['src']
+			resources.srcDirs = ['src']
+			aidl.srcDirs = ['src']
+			renderscript.srcDirs = ['src']
+			res.srcDirs = ['res']
+			assets.srcDirs = ['assets']
+		}
+	}
+
+}
